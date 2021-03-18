@@ -68,5 +68,3 @@ for tag in tagged:
     if tag[1] == 'NN' or tag[1] == 'NNP':
         result.append(tag[0])
         # print(tag[0])
-
-print(result)
