@@ -7,7 +7,7 @@ import csv
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from pymongo import MongoClient
 
 # String to List
@@ -32,7 +32,7 @@ tv = TfidfVectorizer(ngram_range=(1,2), max_features=50000, sublinear_tf=True, m
 
 # 매주 들어올 데이터
 data_x = []
-filename = '../NLP/new_train_data_weekly.csv'
+filename = '../NLP/new_new_train_data_weekly.csv'
 with open(filename) as csvfile:
     reader = csv.reader(csvfile, delimiter=',')
     for row in reader:
@@ -48,8 +48,8 @@ transformed_data = tv.transform(data_x)
 predicted = model.predict(transformed_data)
 
 # insert predicted data( classified category )
-csvfile = pd.read_csv(filename, names=['contentId', 'words', 'tags', 'view_count'])
-csvfile.insert(4,'category', predicted)
+csvfile = pd.read_csv(filename, names=['contentId', 'words', 'tags', 'view_count', 'up_vote_count', 'title', 'creation_date'])
+csvfile.insert(7,'category', predicted)
 
 ## csv to dict
 my_dict = []
@@ -59,7 +59,10 @@ for row_idx,value in csvfile.iterrows():
         "words":str_to_list(value[1]),
         "tags":str_to_list(value[2]),
         "view_count":value[3],
-        "category":int(value[4])
+        "up_vote_count":int(value[4]),
+        "title":value[5],
+        "creation_date":value[6], # timestamp
+        "category":int(value[7])
     }
     my_dict.append(dict)
 
@@ -92,7 +95,8 @@ for category in range(10):
 
 
 max_view = [ x for x in range(10)]
-
+max_vote = -1
+most_vote = []
 for row in my_dict:
     
     category_num = row["category"]
@@ -113,7 +117,21 @@ for row in my_dict:
     view_count = row["view_count"]
     if max_view[category_num] < view_count:
         max_view[category_num] = view_count
-        most_error.append({"contentId" : row["contentId"], "count" : view_count})
+        most_error.append({
+            "contentId" : row["contentId"],
+            "count" : view_count,
+            "title" : row["title"],
+            "creation_date" : "{:%Y-%m-%d %H:%M:%S}".format(datetime.fromtimestamp(row["creation_date"]))
+        })
+        
+    # most vote 
+    if max_vote < row["up_vote_count"]:
+        most_vote.append({
+             "contentId" : row["contentId"],
+            "count" : view_count,
+            "title" : row["title"],
+            "creation_date" : "{:%Y-%m-%d %H:%M:%S}".format(datetime.fromtimestamp(row["creation_date"]))
+        })
         
     
     for word in word_list:
@@ -156,7 +174,7 @@ category_name_dict = {
  Creaet Common Report
 """
 ## 공통 Report 1 : 최다 VOTE 글 10개, 데이터에 아직 Vote가 없음
-most_vote = {}
+most_vote = most_vote[-3:]
 
 ## 공통 Report 2 : 모든 카테고리별 비율
 
