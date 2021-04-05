@@ -16,7 +16,7 @@ from time import time
 
 # vectorizer load
 tf_data_x = []
-with open('../NLP/newlistfile.csv') as csvfile:
+with open('../../../newlistfile.csv') as csvfile: # locate in jenkins_home
     reader = csv.reader(csvfile, delimiter=',')
     for row in reader:
         words = row[1][2:len(row[1])-2].replace("\"","").replace("\\","").replace("'", "").split(", ")
