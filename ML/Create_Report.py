@@ -319,4 +319,4 @@ mycol = mydb['report_test']
 mycol.insert_one(report)
 
 # remove after creating report
-mycol_mycol_contents.remove({})
+mycol_contents.remove({})
