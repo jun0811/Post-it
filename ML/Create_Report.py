@@ -16,7 +16,7 @@ from time import time
 
 # vectorizer load
 tf_data_x = []
-with open('../../../newlistfile.csv') as csvfile: # locate in jenkins_home
+with open('/var/jenkins_home/newlistfile.csv') as csvfile: # locate in jenkins_home
     reader = csv.reader(csvfile, delimiter=',')
     for row in reader:
         words = row[1][2:len(row[1])-2].replace("\"","").replace("\\","").replace("'", "").split(", ")
@@ -42,7 +42,7 @@ data_x = []
 for row in data:
     data_x.append(' '.join(row["words"]))
 
-model = joblib.load('../../../Learned_model')
+model = joblib.load('/var/jenkins_home/Learned_model')
 
 # TF-IDF
 transformed_data = tv.transform(data_x)
