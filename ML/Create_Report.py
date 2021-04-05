@@ -32,7 +32,7 @@ tv = TfidfVectorizer(ngram_range=(1,2), max_features=50000, sublinear_tf=True, m
 # 매주 들어오는 데이터
 my_client_contents = MongoClient('mongodb://%s:%s@3.34.182.63:27017/postit' % ("ssafy103pi", "postit123"))
 mydb = my_client_contents['postit']
-mycol = mydb['contents_test']
+mycol_contents = mydb['contents_test']
 
 
 # mongo 에서 읽어서 classified
@@ -319,4 +319,4 @@ mycol = mydb['report_test']
 mycol.insert_one(report)
 
 # remove after creating report
-mycol.remove({})
+mycol_mycol_contents.remove({})
