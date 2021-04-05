@@ -1,6 +1,6 @@
 """
     Author : HanJaehee
-    date : 2021/4/1
+    date : 2021/4/6
 """
 import joblib
 import csv
@@ -9,10 +9,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score
 from datetime import timedelta, date, datetime
 from pymongo import MongoClient
+from time import time
 
-# String to List
-def str_to_list(words_string):
-    return words_string[2:len(words_string)-2].split("\', \'")
 
 
 # vectorizer load
@@ -30,41 +28,35 @@ tv = TfidfVectorizer(ngram_range=(1,2), max_features=50000, sublinear_tf=True, m
 # min_df : 최소 카운트 1개 이상으로
 
 
-# 매주 들어올 데이터
+# 매주 들어오는 데이터
+my_client_contents = MongoClient('mongodb://%s:%s@3.34.182.63:27017/postit' % ("ssafy103pi", "postit123"))
+mydb = my_client_contents['postit']
+mycol = mydb['contents']
+
+
+# mongo 에서 읽어서 classified
+data = list(x for x in mycol.find())
+
 data_x = []
-filename = '../NLP/new_new_train_data_weekly.csv'
-with open(filename) as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
-    for row in reader:
-        words = row[1][2:len(row[1])-2].replace("\"","").replace("\\","").replace("'", "").split(", ")
-        data_x.append(' '.join(words))
+for row in data:
+    data_x.append(' '.join(row["words"]))
 
 model = joblib.load('Learned_model')
 
 # TF-IDF
 transformed_data = tv.transform(data_x)
 
-# classfied
+# classified data
 predicted = model.predict(transformed_data)
 
-# insert predicted data( classified category )
-csvfile = pd.read_csv(filename, names=['contentId', 'words', 'tags', 'view_count', 'up_vote_count', 'title', 'creation_date'])
-csvfile.insert(7,'category', predicted)
+# Add Category column
+for idx in range(len(data)):
+    data[idx]["category"] = predicted[idx]
+    del data[idx]["_id"]
 
-## csv to dict
-my_dict = []
-for row_idx,value in csvfile.iterrows():
-    dict = {
-        "contentId":value[0],
-        "words":str_to_list(value[1]),
-        "tags":str_to_list(value[2]),
-        "view_count":value[3],
-        "up_vote_count":int(value[4]),
-        "title":value[5],
-        "creation_date":value[6], # timestamp
-        "category":int(value[7])
-    }
-    my_dict.append(dict)
+# data insert
+my_dict = data
+
 
 ## tag and word whitelist
 white_list = "python java javascript c# python-3.x typescript php dart  c++ kotlin go c rust scala ruby js cpp \
@@ -99,7 +91,7 @@ max_vote = -1
 most_vote = []
 for row in my_dict:
     
-    category_num = row["category"]
+    category_num = int(row["category"])
     category_count[category_num] += 1 # for 공통보고서 2
     
     all_dict = all_data[category_num]["all_dict"]
@@ -125,10 +117,12 @@ for row in my_dict:
         })
         
     # most vote 
-    if max_vote < row["up_vote_count"]:
+    vote_count = row["up_vote_count"]
+    if max_vote < vote_count:
+        max_vote = vote_count
         most_vote.append({
-             "contentId" : row["contentId"],
-            "count" : view_count,
+            "contentId" : row["contentId"],
+            "count" : vote_count,
             "title" : row["title"],
             "creation_date" : "{:%Y-%m-%d %H:%M:%S}".format(datetime.fromtimestamp(row["creation_date"]))
         })
@@ -174,7 +168,8 @@ category_name_dict = {
  Creaet Common Report
 """
 ## 공통 Report 1 : 최다 VOTE 글 10개, 데이터에 아직 Vote가 없음
-most_vote = most_vote[-3:]
+most_vote = most_vote[-10:]
+most_vote.reverse()
 
 ## 공통 Report 2 : 모든 카테고리별 비율
 
@@ -299,7 +294,8 @@ for category in range(7):
         })
     
     ## Category Report 4 : 가장 많이 겪은 에러 TOP 3 : View Count 순
-    most_error = all_data[category]["most_error"][-3:]
+    most_error = all_data[category]["most_error"][-10:]
+    most_error.reverse()
     
     ## export category report
     category_report[category_name_dict[category]]= {
@@ -311,11 +307,15 @@ for category in range(7):
 
 ## Export All Rerpot
 report = {
+    "creation_date" : int(time()*1000),
     "common_report" : common_report,
     "category_report" : category_report,
 }
 
-report_client = my_client = MongoClient('mongodb://%s:%s@3.34.182.63:27017/postit' % ("ssafy103pi", "postit123"))
+report_client = MongoClient('mongodb://%s:%s@3.34.182.63:27017/postit' % ("ssafy103pi", "postit123"))
 mydb = report_client['postit']
 mycol = mydb['report']
 mycol.insert_one(report)
+
+# remove after creating report
+mycol.remove({})
