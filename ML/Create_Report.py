@@ -42,7 +42,7 @@ data_x = []
 for row in data:
     data_x.append(' '.join(row["words"]))
 
-model = joblib.load('Learned_model')
+model = joblib.load('../../../Learned_model')
 
 # TF-IDF
 transformed_data = tv.transform(data_x)
