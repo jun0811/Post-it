@@ -36,7 +36,7 @@ mycol_contents = mydb['contents_test']
 
 
 # mongo 에서 읽어서 classified
-data = list(x for x in mycol.find())
+data = list(x for x in mycol_contents.find())
 
 data_x = []
 for row in data:
