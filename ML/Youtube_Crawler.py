@@ -33,7 +33,7 @@ client = MongoClient(
 # db
 db = client['postit']
 # 컬렉션
-collection = db['youtube_test']
+collection = db['youtube']
 
 
 DEVELOPER_KEY = "AIzaSyC0wo07Z69Ig5hy7lWwe595XQ-o5KPJU50"  # 유튜브 API 키 값

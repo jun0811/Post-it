@@ -113,5 +113,5 @@ for row_index, row in df.iterrows(): # 10개만 일단
 
 sof_client = my_client = MongoClient('mongodb://%s:%s@3.34.182.63:27017/postit' % ("ssafy103pi", "postit123"))
 mydb = sof_client['postit']
-mycol = mydb['contents_test']
+mycol = mydb['contents']
 mycol.insert_many(result)
