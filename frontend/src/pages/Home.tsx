@@ -1,11 +1,6 @@
-import { useState } from 'react';
-import ReactDOM from 'react-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Link } from 'react-router-dom';
-import graph1 from 'assets/images/graph1.png';
-import graph2 from 'assets/images/graph2.png';
-import graph3 from 'assets/images/graph3.png';
 
 import blog from 'assets/images/blog.png';
 import youtube from 'assets/images/youtube.png';
@@ -13,16 +8,11 @@ import chart1 from 'assets/images/chart1.png';
 import chart2 from 'assets/images/chart2.png';
 import chart3 from 'assets/images/chart3.png';
 
-import contents from 'assets/images/contents.png';
-import mycontents from 'assets/images/mycontents.png';
 import Grid from '@material-ui/core/Grid';
 import { Section, TextStyle, Img } from '../assets/styles/HomeStyle';
 import { Container } from '@material-ui/core';
 
-import styled from 'styled-components';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { getCurrentUser } from 'api/user';
 import TopButton from 'components/common/TopButton';
 import BottomButton from 'components/common/BottomButton';
 
@@ -43,11 +33,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Home = () => {
   const classes = useStyles();
-
-  // const [inverted, setInverted] = useState(false);
-  // const hadleChage = () => {
-  //   setInverted(true)
-  // }
 
   return (
     <Container className={classes.container}>
@@ -174,7 +159,7 @@ const Home = () => {
               textAlign="start"
               data-aos="fade-in"
             >
-              요즘 뜨는 IT 유튜브 동영상을 모아봤어.
+              요즘 뜨는 IT 유튜브 동영상을 모아봤어요.
             </TextStyle>
             <TextStyle
               fontSize="1.2em"

@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import { TurnedIn } from '@material-ui/icons';
-import { SliderSwitch, StyledCard } from './Daily.styles';
+import { StyledCard } from './Daily.styles';
 import { allYoutube } from 'api/daily';
-import LazyLoad from 'react-lazyload';
 import { CardButtonGroup, Switch } from './Common';
-import { setCurrentUser } from 'api/user';
 import { API_BASE_URL } from 'config/config';
 
-import { RecoilRoot, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { tokenState } from 'index';
 
 import {

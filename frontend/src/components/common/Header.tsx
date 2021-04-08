@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink, Link, useHistory } from 'react-router-dom';
-
-import { getCurrentUser } from 'api/user';
-
 import Login from 'pages/Login';
 import theme from 'assets/theme';
 import { Modal } from './Modal';
 import { Wrapper, Button } from './Header.styles';
 import { PropsTypes, MenuTypes } from 'types/common/headerTypes';
-import axios from 'axios';
 
 const MenuItem = ({ to, item, children }: MenuTypes) => (
   <NavLink

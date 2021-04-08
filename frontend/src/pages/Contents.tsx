@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { Button, Card, Checkbox, Container, Grid } from '@material-ui/core';
-import { TurnedIn, MoreVert } from '@material-ui/icons';
+import { Container } from '@material-ui/core';
 import Blog from 'components/daily/Blog';
 import Youtube from 'components/daily/Youtube';
-import Job from 'components/daily/Job';
-import LazyLoad from 'react-lazyload';
 
 //랩퍼
 const Wrapper = styled.div`
@@ -62,11 +59,7 @@ function Contents() {
       setYoutube(true);
       setJob(false);
     }
-    // else {
-    //   setBlog(false);
-    //   setYoutube(false);
-    //   setJob(true);
-    // }
+
     setActivate(v);
   };
   return (
@@ -98,7 +91,6 @@ function Contents() {
               </div>
             );
           if (active == 1) return <Youtube></Youtube>;
-          // if (active == 2) return <Job></Job>;
         })()}
       </Container>
     </Wrapper>

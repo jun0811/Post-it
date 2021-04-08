@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import LazyLoad from 'react-lazyload';
 
 // axios
@@ -76,28 +76,6 @@ const Report = () => {
       setDate(initData.date);
     }
     insertReportData();
-    // getReport()
-    //   .then((res) => {
-    //     empty();
-    //     for (const d in res.data.data) {
-    //       weekIndex.set(res.data.data[d].date, d);
-    //       weeks.push(res.data.data[d].date);
-    //       most_vote.push(res.data.data[d].common_report.most_vote);
-    //       all_category_ratio.push(
-    //         res.data.data[d].common_report.all_category_ratio,
-    //       );
-    //       category_report.push(res.data.data[d].category_report);
-    //     }
-
-    //     return res.data.data;
-    //   })
-    //   .then((res) => {
-    //     setCategoryReport(res[0].category_report);
-    //     setMostVote(res[0].common_report.most_vote);
-    //     setAllCategoryRatio(res[0].common_report.all_category_ratio);
-    //     setDate(res[0].date);
-    //   })
-    //   .catch((err) => console.log(err));
 
     return () => {
       setAllCategoryRatio([]);
