@@ -95,7 +95,6 @@ const App: React.FC = (): ReactElement => {
     // getCurrent request
     getCurrentUser()
       .then((response) => {
-        // console.log(response);
         setCurrentUser(response), setAuthenticated(true), setLoading(false);
 
         localStorage.setItem('name', response.data.name);
@@ -111,23 +110,19 @@ const App: React.FC = (): ReactElement => {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   }
 
   useEffect(() => {
     setToken(1); // 토큰 생성
-    // console.log(token);
     loadCurrentlyLoggedInUser();
     return () => {};
   }, [token]);
 
   function logoutUser() {
-    axios
-      .get(LOGOUT, {
-        withCredentials: true,
-      })
-      .then((res) => console.log(res));
+    axios.get(LOGOUT, {
+      withCredentials: true,
+    });
   }
 
   function handleLogout() {
