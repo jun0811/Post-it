@@ -24,7 +24,7 @@ function Youtube() {
   const [token] = useRecoilState(tokenState);
   const [toggle] = useRecoilState(toggleState);
   const [active] = useRecoilState(activeState);
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
   async function setContent() {
     const data = await allYoutube();
