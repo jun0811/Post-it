@@ -15,12 +15,8 @@ class OAuth2RedirectHandler extends Component<{ location?: Location }> {
   render() {
     const token = this.getUrlParameter('token');
     const error = this.getUrlParameter('error');
-
     if (token) {
-      // login 판단 여부
       localStorage.setItem('isLogin', '1');
-      // localStorage.setItem('accessToken', token);
-      //   localStorage.setItem('refreshToken', token);
       return (
         <Redirect
           to={{
@@ -30,7 +26,6 @@ class OAuth2RedirectHandler extends Component<{ location?: Location }> {
         />
       );
     } else {
-      console.log('fail');
       return (
         <Redirect
           to={{

@@ -6,9 +6,16 @@ import React from 'react';
 import { REFRESH_TOKEN } from 'config/config';
 import { CircularProgress } from '@material-ui/core';
 
+import GlobalStyle from 'assets/styles/GlobalStyle';
+
 export const getTokenTrigger = atom({
   key: 'getTokenTrigger', // unique ID (with respect to other atoms/selectors)
   default: 0, // default value (aka initial value)
+});
+
+export const activeState = atom({
+  key: 'activeToggle',
+  default: false,
 });
 
 export const toggleState = atom({
@@ -20,7 +27,6 @@ export const tokenState = selector({
   key: 'tokenState',
   get: async ({ get }) => {
     get(getTokenTrigger); // 트리거의 상태를 구독해서 트리거 값이 변경될 때마다 새로 계산
-    // console.log(localStorage.getItem('dumy'));
     if (localStorage.getItem('isLogin') == '1') {
       const response = await axios.get(REFRESH_TOKEN, {
         withCredentials: true,
@@ -50,6 +56,7 @@ ReactDOM.render(
             background: '#2d2839',
           }}
         >
+          <GlobalStyle />
           <CircularProgress />
         </div>
       }

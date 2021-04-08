@@ -55,9 +55,6 @@ const App: React.FC = (): ReactElement => {
   const [authenticated, setAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [img, setImg] = useState('');
   const [token, setToken] = useRecoilState(tokenState);
 
   let history = useHistory();
@@ -98,13 +95,12 @@ const App: React.FC = (): ReactElement => {
     // getCurrent request
     getCurrentUser()
       .then((response) => {
-        // console.log(response);
         setCurrentUser(response), setAuthenticated(true), setLoading(false);
-        setName(response.data.name),
-          setEmail(response.data.email),
-          setImg(response.data.imageUrl);
 
         localStorage.setItem('name', response.data.name);
+        localStorage.setItem('email', response.data.email);
+        localStorage.setItem('imageUrl', response.data.imageUrl);
+
         if (response.data.youtubeList.length != 0) {
           localStorage.setItem('youtubeList', response.data.youtubeList);
         }
@@ -114,23 +110,19 @@ const App: React.FC = (): ReactElement => {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   }
 
   useEffect(() => {
     setToken(1); // 토큰 생성
-    // console.log(token);
     loadCurrentlyLoggedInUser();
     return () => {};
   }, [token]);
 
   function logoutUser() {
-    axios
-      .get(LOGOUT, {
-        withCredentials: true,
-      })
-      .then((res) => console.log(res));
+    axios.get(LOGOUT, {
+      withCredentials: true,
+    });
   }
 
   function handleLogout() {
@@ -139,6 +131,8 @@ const App: React.FC = (): ReactElement => {
     localStorage.removeItem('blogList');
     localStorage.removeItem('youtubeList');
     localStorage.removeItem('isLogin');
+    localStorage.removeItem('email');
+    localStorage.removeItem('imageUrl');
     logoutUser();
     swal('로그아웃 완료', '다음에 또 만나요🖐', 'success');
 
@@ -168,44 +162,42 @@ const App: React.FC = (): ReactElement => {
     );
   }
   return (
-    <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        {/* css 초기화 */}
-        <BrowserRouter>
-          <GlobalFonts />
-          <GlobalStyle />
-          <Header authenticated={authenticated} onLogout={handleLogout} />
-          {/* Suspense는 페이지가 랜더링되기 전 event를 설정합니다. */}
-          <Suspense fallback={<CircularProgress />}>
-            <Switch>
-              <Route path="/" component={Home} exact={true} />
-              <Route path="/report" component={Report} exact={true} />
-              <Route path="/contents" component={Contents} exact={true} />
-              <Route
-                path="/profile"
-                component={Profile}
-                exact={true}
-                // name={name}
-                // email={email}
-                // img={img}
-              />
-              <PrivateRoute
-                path="/myfolder/:username"
-                authenticated={authenticated}
-                component={MyFolder}
-                currentUser={currentUser}
-              />
-              <Route
-                path="/oauth2/redirect"
-                component={OAuth2RedirectHandler}
-              ></Route>
-              <Route component={NotFound}></Route>
-            </Switch>
-          </Suspense>
-          <Footer data-aos="fade-in" data-aos-duration="2000" />
-        </BrowserRouter>
-      </ThemeProvider>
-    </RecoilRoot>
+    <ThemeProvider theme={theme}>
+      {/* css 초기화 */}
+      <BrowserRouter>
+        <GlobalFonts />
+        <GlobalStyle />
+        <Header authenticated={authenticated} onLogout={handleLogout} />
+        {/* Suspense는 페이지가 랜더링되기 전 event를 설정합니다. */}
+        {/* <Suspense fallback={<CircularProgress />}> */}
+        <Switch>
+          <Route path="/" component={Home} exact={true} />
+          <Route path="/report" component={Report} exact={true} />
+          <Route path="/contents" component={Contents} exact={true} />
+          <Route
+            path="/profile"
+            component={Profile}
+            exact={true}
+            // name={name}
+            // email={email}
+            // img=Suspense{img}
+          />
+          <PrivateRoute
+            path="/myfolder/:username"
+            authenticated={authenticated}
+            component={MyFolder}
+            currentUser={currentUser}
+          />
+          <Route
+            path="/oauth2/redirect"
+            component={OAuth2RedirectHandler}
+          ></Route>
+          <Route component={NotFound}></Route>
+        </Switch>
+        {/* </Suspense> */}
+        <Footer data-aos="fade-in" data-aos-duration="2000" />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 };
 

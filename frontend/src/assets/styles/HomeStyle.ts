@@ -64,6 +64,7 @@ export const TextStyle = styled.div<TextStyle>`
 
 export const Img = styled.img<{ hide?: string }>`
   width: 100%;
+  height: 100%;
 
   ${media.sm} {
     // 모바일 버전에선 그림 3개 중에 1개만 나오게 하기 & 마진 조정

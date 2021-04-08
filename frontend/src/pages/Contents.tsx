@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { Button, Card, Checkbox, Container, Grid } from '@material-ui/core';
-import { TurnedIn, MoreVert } from '@material-ui/icons';
+import { Container } from '@material-ui/core';
 import Blog from 'components/daily/Blog';
 import Youtube from 'components/daily/Youtube';
-import Job from 'components/daily/Job';
-import LazyLoad from 'react-lazyload';
+import { activeState } from 'index';
+import { useRecoilState } from 'recoil';
 
 //랩퍼
 const Wrapper = styled.div`
@@ -48,56 +47,53 @@ const Bar = styled.p`
 `;
 
 function Contents() {
-  const [active, setActivate] = useState(0);
+  // const [active, setActivate] = useState();
+  const [active, setActive] = useRecoilState(activeState);
   const [isBlog, setBlog] = useState(true);
   const [isYoutube, setYoutube] = useState(false);
   const [isJob, setJob] = useState(false);
-  const clickHandler = (v: number) => {
-    if (v == 0) {
+  const clickHandler = (v: boolean) => {
+    if (v) {
       setBlog(true);
       setYoutube(false);
       setJob(false);
-    } else if (v == 1) {
+    } else if (!v) {
       setBlog(false);
       setYoutube(true);
       setJob(false);
     }
-    // else {
-    //   setBlog(false);
-    //   setYoutube(false);
-    //   setJob(true);
-    // }
-    setActivate(v);
+
+    setActive(v);
   };
   return (
     <Wrapper>
       <Container>
         <Tab>
           <MyButton
-            onClick={() => clickHandler(0)}
-            style={{ filter: isBlog ? 'brightness(1.5)' : 'brightness(0.75)' }}
+            onClick={() => clickHandler(false)}
+            style={{ filter: !active ? 'brightness(1.5)' : 'brightness(0.75)' }}
           >
             개발 블로그
           </MyButton>
           <Bar> | </Bar>
           <MyButton
-            onClick={() => clickHandler(1)}
+            onClick={() => clickHandler(true)}
             style={{
-              filter: isYoutube ? 'brightness(1.5)' : 'brightness(0.75)',
+              filter: active ? 'brightness(1.5)' : 'brightness(0.75)',
             }}
           >
             유튜브 동영상
           </MyButton>
         </Tab>
         {(function () {
-          if (active == 0)
+          if (!active)
             return (
               <div>
+                {/* <Title>최신 블로그 게시물</Title> */}
                 <Blog></Blog>
               </div>
             );
-          if (active == 1) return <Youtube></Youtube>;
-          // if (active == 2) return <Job></Job>;
+          if (active) return <Youtube></Youtube>;
         })()}
       </Container>
     </Wrapper>

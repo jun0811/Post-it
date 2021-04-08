@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink, Link, useHistory } from 'react-router-dom';
-import { getCurrentUser } from 'api/user';
 import Login from 'pages/Login';
 import theme from 'assets/theme';
 import { Modal } from './Modal';
@@ -113,7 +112,6 @@ function Header(props: PropsTypes) {
       >
         <svg
           id="bold"
-          // enable-background="new 0 0 24 24"
           viewBox="0 0 24 24"
           height="20"
           width="20"

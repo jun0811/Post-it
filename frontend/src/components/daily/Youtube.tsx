@@ -1,16 +1,11 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import styled from 'styled-components';
+import { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { TurnedIn } from '@material-ui/icons';
-import { SliderSwitch, StyledCard } from './Daily.styles';
+import { StyledCard } from './Daily.styles';
 import { allYoutube } from 'api/daily';
-import LazyLoad from 'react-lazyload';
 import { CardButtonGroup, Switch } from './Common';
 import { setCurrentUser } from 'api/user';
-import { API_BASE_URL } from 'config/config';
-
-import { RecoilRoot, useRecoilState } from 'recoil';
-import { tokenState } from 'index';
+import { useRecoilState } from 'recoil';
+import { tokenState, toggleState, activeState } from 'index';
 
 import {
   Title,
@@ -20,124 +15,108 @@ import {
   CardTitle,
   CardDate,
 } from './Daily.styles';
-import { AxiosResponse } from 'axios';
-
-const CardButtonWrapper = styled.div`
-  display: flex;
-  /* align-items: center; */
-`;
 
 function Youtube() {
-  const [youtube, setYoutube] = useState([] as any);
+  const [youtubeViewed, setYoutubeViewed] = useState([] as any);
   const [tmp, setTmp] = useState([] as any);
-  const [status, setStatus] = useState({
-    imageStatus: 'Loading',
-    error: false,
-  });
-  const [youtubeId, setYoutubeId] = useState([] as any);
+  const [youtubeListLiked, setYoutubeListLiked] = useState('' as any);
 
-  const [token, setToken] = useRecoilState(tokenState);
+  const [token] = useRecoilState(tokenState);
+  const [toggle] = useRecoilState(toggleState);
+  const [active] = useRecoilState(activeState);
+  const [authenticated, setAuthenticated] = useState(true);
 
-  const request = (options: any) => {
-    const headers = new Headers({
-      'Content-Type': 'application/json',
-    });
-
-    if (token) {
-      headers.append('Authorization', 'Bearer ' + token);
+  async function setContent() {
+    const data = await allYoutube();
+    let youtubeListInLS = localStorage.getItem('youtubeList');
+    if (youtubeListInLS) {
+      setYoutubeListLiked(youtubeListInLS);
     }
 
-    const defaults = { headers: headers };
-    options = Object.assign({}, defaults, options);
-    return fetch(options.url, options).then((response) =>
-      response.json().then((json) => {
-        if (!response.ok) {
-          return Promise.reject(json);
-        }
-        return json;
-      }),
-    );
-  };
-
-  function setCurrentUser(user: any) {
-    if (!token) {
-      return Promise.reject('No access token set.');
+    let allYoutubeData = data.data.data;
+    if (toggle) {
+      if (youtubeListInLS) {
+        setYoutubeViewed(
+          allYoutubeData.filter((res: any) =>
+            youtubeListInLS?.includes(res.id),
+          ) as any,
+        );
+      }
+    } else {
+      setYoutubeViewed(allYoutubeData);
     }
-
-    return request({
-      url: API_BASE_URL + '/user/me',
-      method: 'post',
-      body: JSON.stringify(user),
-    });
+    setTmp(allYoutubeData);
   }
-  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem('name')) {
       setAuthenticated(true);
     }
-    async function setContent() {
-      const data = await allYoutube();
-      setYoutube(data.data.data);
-      setTmp(data.data.data);
-      const youtubeList = localStorage.getItem('youtubeList');
-
-      if (youtubeList) {
-        setYoutubeId(youtubeList);
-      }
-    }
     setContent();
-    // console.log(youtubeId);
-
     return () => {};
   }, []);
 
   useEffect(() => {
-    if (youtubeId.length == 0) return;
+    if (localStorage.getItem('name')) {
+      setAuthenticated(true);
+    }
+    setContent();
+    return () => {};
+  }, [active]);
 
-    const name = localStorage.getItem('name');
+  useEffect(() => {
+    if (youtubeListLiked.length == 0) return;
+
     const blogList = localStorage.getItem('blogList');
-    if (youtubeId === 'flag') localStorage.removeItem('youtubeList');
-    else localStorage.setItem('youtubeList', youtubeId);
+    if (youtubeListLiked === 'flag') localStorage.removeItem('youtubeList');
+    else localStorage.setItem('youtubeList', youtubeListLiked);
 
-    const user: object = {
-      name: name as any,
-      blogList: blogList == null ? [] : (blogList?.split(',') as any),
-      youtubeList: youtubeId === 'flag' ? [] : (youtubeId?.split(',') as any),
-    };
-    setCurrentUser(user);
-  }, [youtubeId]);
+    setCurrentUser(
+      {
+        name: localStorage.getItem('name') as any,
+        blogList:
+          localStorage.getItem('blogList') == null
+            ? []
+            : (blogList?.split(',') as any),
+        youtubeList:
+          youtubeListLiked === 'flag'
+            ? []
+            : (youtubeListLiked?.split(',') as any),
+      },
+      token,
+    );
+  }, [youtubeListLiked]);
 
   function idAdd(data: any) {
-    if (youtubeId === 'flag') setYoutubeId('');
+    if (youtubeListLiked === 'flag') setYoutubeListLiked('');
 
     const ylFromStroage = localStorage.getItem('youtubeList');
 
-    let ylString = youtubeId.concat(',' + data);
+    let ylString = youtubeListLiked.concat(',' + data);
 
     let size = ylFromStroage === null ? 0 : 1;
 
     if (size == 0) {
       ylString = data;
     }
-    setYoutubeId(ylString);
+    setYoutubeListLiked(ylString);
   }
 
   function idRemove(data: any) {
-    let idx = youtubeId.indexOf(data);
+    let idx = youtubeListLiked.indexOf(data);
 
     if (idx == 0) {
-      if (youtubeId.length == data.length) {
-        setYoutubeId('flag');
+      if (youtubeListLiked.length == data.length) {
+        setYoutubeListLiked('flag');
       } else {
-        setYoutubeId(youtubeId.replace(data + ',', ''));
+        setYoutubeListLiked(youtubeListLiked.replace(data + ',', ''));
       }
     } else {
-      setYoutubeId(youtubeId.replace(',' + data, ''));
+      setYoutubeListLiked(youtubeListLiked.replace(',' + data, ''));
     }
   }
 
-  const cardList = youtube.map((res: any) => (
+  const cardList = youtubeViewed.map((res: any) => (
     <Grid key={res.id} item xs={12} md={4} sm={6}>
       <StyledCard
         style={{
@@ -159,7 +138,7 @@ function Youtube() {
             {authenticated ? (
               <>
                 <CardButtonGroup
-                  checked={youtubeId.indexOf(res.id) >= 0 ? true : false}
+                  checked={youtubeListLiked.indexOf(res.id) >= 0 ? true : false}
                   id={res.id}
                   idAdd={idAdd}
                   idRemove={idRemove}
@@ -180,13 +159,14 @@ function Youtube() {
 
   // 토글 스위치 함수
   function filterCard(data: boolean) {
-    // console.log(data);
     if (data == true) {
-      setYoutube(
-        youtube.filter((res: any) => youtubeId.includes(res.id)) as any,
+      setYoutubeViewed(
+        youtubeViewed.filter((res: any) =>
+          youtubeListLiked.includes(res.id),
+        ) as any,
       );
     } else {
-      setYoutube(tmp);
+      setYoutubeViewed(tmp);
     }
   }
 
@@ -197,7 +177,7 @@ function Youtube() {
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {authenticated ? (
             <>
-              <SubTitle>즐겨찾기</SubTitle>
+              <SubTitle>북마크</SubTitle>
               <Switch filterCard={filterCard}></Switch>
             </>
           ) : null}

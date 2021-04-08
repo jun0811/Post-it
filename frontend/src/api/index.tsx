@@ -25,15 +25,11 @@ instance.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log(error);
     if (error.response.status == '401') {
       alert('로그인 만료');
     } else if (error.response.status == '403') {
       // 토큰이 있으면 권한이 없으면
       // 토큰이 없으면 로그인 필요
-      console.log('권한 x or 로그인 필요');
-    } else {
-      console.log(error);
     }
   },
 );
