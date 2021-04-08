@@ -1,5 +1,4 @@
 export const API_BASE_URL = 'http://j4c103.p.ssafy.io:5555/api/auth';
-
 export const ACCESS_TOKEN = 'accessToken';
 
 export const OAUTH2_REDIRECT_URI = 'http://j4c103.p.ssafy.io/oauth2/redirect';

@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { StyledCard, StyledSelect } from './Daily.styles';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { allBlog, cartegorySearch } from 'api/daily';
+import { cartegorySearch } from 'api/daily';
 import LazyLoad from 'react-lazyload';
 import { CardButtonGroup, Switch } from './Common';
 import FormControl from '@material-ui/core/FormControl';
 import { tokenState } from 'index';
-import axios from 'axios';
-import { API_BASE_URL } from 'config/config';
 import { toggleState } from 'index';
+import { setCurrentUser } from 'api/user';
 
-import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   Title,
   SubTitle,
@@ -97,24 +96,9 @@ function Blog() {
   const [authenticated, setAuthenticated] = useState(false);
   const [toggle, setToggle] = useRecoilState(toggleState);
 
-  function setCurrentUser(user: any) {
-    if (!token) {
-      return Promise.reject('No access token set.');
-    }
-
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + token,
-    };
-
-    return axios.post(API_BASE_URL + '/user/me', JSON.stringify(user), {
-      headers,
-    });
-  }
-
   async function setContent() {
     // axios 요청
-    const blogListInLS = localStorage.getItem('blogList');
+    let blogListInLS = localStorage.getItem('blogList');
     if (blogListInLS) {
       setBlogListLiked(blogListInLS);
     }
@@ -122,14 +106,17 @@ function Blog() {
     const blogList = data.data.data;
     if (toggle) {
       // 화면에 보일 데이터들 toggle ? filteredBlog : allBlog
-      setBlog(
-        blogList.filter((blog: any) => blogListLiked.includes(blog.id)) as any,
-      );
+      if (blogListInLS && blogListInLS.length !== 0) {
+        setBlog(
+          blogList.filter((blog: any) =>
+            blogListInLS?.split(',').includes(blog.id),
+          ) as any,
+        );
+      }
     } else {
-      setBlog(data.data.data);
+      setBlog(blogList);
     }
-    setTmp(data.data.data);
-    // filterCard(true);
+    setTmp(blogList);
   }
 
   useEffect(() => {
@@ -147,10 +134,6 @@ function Blog() {
   }, [category]);
 
   useEffect(() => {
-    // point1. 맨처음 접속 시 현재 blogList로 리퀘스트 한번 날아감 => 맞음
-    // point2. 블로그 리스트 하나일 경우, remove하면 blogListLiked는 flag만 남음 => 맞음
-    // point3. 블로그 리스트가 하나일 경우, idAdd에서 blogListLiked를 ''로 세팅 => 실행안됨
-    //
     if (blogListLiked.length == 0) return;
 
     const name = localStorage.getItem('name');
@@ -164,7 +147,7 @@ function Blog() {
         blogListLiked === 'flag' ? [] : (blogListLiked?.split(',') as any),
       youtubeList: youtubeList == null ? [] : (youtubeList?.split(',') as any),
     };
-    setCurrentUser(user);
+    setCurrentUser(user, token);
   }, [blogListLiked]);
 
   const company: any = {
@@ -290,7 +273,7 @@ function Blog() {
         >
           {authenticated ? (
             <>
-              <SubTitle>내 관심분야</SubTitle>
+              <SubTitle>북마크</SubTitle>
               <Switch filterCard={filterCard} checked={false}></Switch>
             </>
           ) : null}

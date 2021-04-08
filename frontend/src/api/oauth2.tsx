@@ -15,12 +15,10 @@ class OAuth2RedirectHandler extends Component<{ location?: Location }> {
   render() {
     const token = this.getUrlParameter('token');
     const error = this.getUrlParameter('error');
-
+    console.log('token');
     if (token) {
-      // login 판단 여부
       localStorage.setItem('isLogin', '1');
-      // localStorage.setItem('accessToken', token);
-      //   localStorage.setItem('refreshToken', token);
+      console.log('suc');
       return (
         <Redirect
           to={{
