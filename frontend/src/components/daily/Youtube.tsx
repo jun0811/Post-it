@@ -70,7 +70,7 @@ function Youtube() {
       body: JSON.stringify(user),
     });
   }
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(true);
 
   useEffect(() => {
     if (localStorage.getItem('name')) {
@@ -197,7 +197,7 @@ function Youtube() {
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {authenticated ? (
             <>
-              <SubTitle>즐겨찾기</SubTitle>
+              <SubTitle>북마크</SubTitle>
               <Switch filterCard={filterCard}></Switch>
             </>
           ) : null}

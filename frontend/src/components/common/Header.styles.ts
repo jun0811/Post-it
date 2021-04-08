@@ -9,7 +9,7 @@ export const Wrapper = styled.header`
   height: 48px;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
   background-color: ${({ theme }) => theme.colors.second};
   z-index: 100;
   .header-logo {

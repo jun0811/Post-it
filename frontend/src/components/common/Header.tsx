@@ -116,7 +116,6 @@ function Header(props: PropsTypes) {
       >
         <svg
           id="bold"
-          enable-background="new 0 0 24 24"
           viewBox="0 0 24 24"
           height="20"
           width="20"

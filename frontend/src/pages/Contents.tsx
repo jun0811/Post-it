@@ -91,9 +91,9 @@ function Contents() {
         </Tab>
         {(function () {
           if (active == 0)
-            return(
+            return (
               <div>
-                <Title>최신 블로그 게시물</Title>
+                {/* <Title>최신 블로그 게시물</Title> */}
                 <Blog></Blog>
               </div>
             );
